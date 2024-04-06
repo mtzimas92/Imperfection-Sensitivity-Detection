@@ -13,10 +13,10 @@ def load_data():
     a = np.loadtxt('features.txt')
     b = np.loadtxt('labels.txt')
     X_scaled = preprocessing.scale(a)
-    train_X, test_X, train_y, test_y = train_test_split(X_scaled, b, test_size=0.3, random_state=42)
+    train_X, val_X, train_y, val_y = train_test_split(X_scaled, b, test_size=0.3, random_state=42)
     y_train = to_categorical(train_y)
-    y_test = to_categorical(test_y)
-    return train_X,test_X,y_train,y_test
+    y_val = to_categorical(val_y)
+    return train_X,val_X,y_train,y_val
 
 def create_model(nrows,ncols):
     if (nrows%2==1):
@@ -35,7 +35,7 @@ def create_model(nrows,ncols):
                                 layers.Dense(10,activation='relu'),
                                 layers.Dense(2, activation='softmax')])
 
-train_X,test_X,y_train,y_test = load_data()
+train_X,val_X,y_train,y_val = load_data()
 n_cols = train_X.shape[1]
 n_rows = train_X.shape[0]
 print(n_cols,n_rows)
@@ -44,5 +44,5 @@ model.compile(optimizer=tf.keras.optimizers.RMSprop(0.01),
               loss=tf.keras.losses.CategoricalCrossentropy(),
               metrics=[tf.keras.metrics.CategoricalAccuracy()])
 
-model.fit(train_X, y_train, epochs=100, batch_size=100,validation_data=(test_X,y_test)
+model.fit(train_X, y_train, epochs=100, batch_size=100,validation_data=(test_X,y_val)
           ,verbose=1)
